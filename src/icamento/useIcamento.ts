@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getStore, lerRascunho, limparRascunho, salvarRascunho } from '../checklist/storage'
 import { copiarOperador } from './pessoa'
-import { icamentoVazio, linhaVazia, type IcamentoData, type LinhaAcessorio } from './schema'
+import { icamentoVazio, linhaVazia, rascunhoValido, type IcamentoData, type LinhaAcessorio } from './schema'
 
 const CHAVE = 'site-luis:icamento:v1'
 
@@ -20,7 +20,10 @@ export interface IcamentoApi {
 
 export function useIcamento(): IcamentoApi {
   const store = useMemo(getStore, [])
-  const [data, setData] = useState<IcamentoData>(() => lerRascunho(store, CHAVE, icamentoVazio))
+  const [data, setData] = useState<IcamentoData>(() => {
+    const d = lerRascunho(store, CHAVE, icamentoVazio)
+    return rascunhoValido(d) ? d : icamentoVazio()
+  })
   const [storageOk, setStorageOk] = useState(store !== null)
 
   useEffect(() => {

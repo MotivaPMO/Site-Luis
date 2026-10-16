@@ -80,7 +80,7 @@ src/
 - `Home.tsx`: o card "Plano de Içamento" vira link para `/icamento`; `App.tsx` ganha a rota.
 - `components/SignaturePad.tsx`: o desenho em canvas é reaproveitado pelo `QuadroEsboco` (extrai-se a parte comum só se ficar simples; senão o quadro replica o necessário).
 
-**Desenho na tela:** o container tem `aspect-ratio: 2151/1200`, a imagem ocupa 100% e cada caixa é um elemento posicionado por porcentagem (`x/2151`, `y/1200`, …). O valor aparece dentro da caixa, com fonte proporcional à largura do container. No PC as caixas podem ser editadas diretamente; no celular o toque abre a folha.
+**Desenho na tela:** o container tem `aspect-ratio: 2151/1200`, a imagem ocupa 100% e cada caixa é um elemento posicionado por porcentagem (`x/2151`, `y/1200`, …). O valor aparece dentro da caixa, com fonte proporcional à largura do container. A mesma folha de edição (bottom sheet) abre em qualquer tamanho de tela, no PC e no celular (decisão registrada em 2026-10-16).
 
 **PDF:** página A4 retrato em `react-pdf` que reproduz a folha: cabeçalho (logo à esquerda, título "Plano Básico de Içamento de Carga (Guindastes)" ao centro, caixa em branco à direita como no original), linhas de Local/Atividade/Equipamento/Carga/Gerência/Data, "Como foi obtido o peso da carga?", faixa "ESQUEMA DE IÇAMENTO", a imagem com os valores desenhados nas mesmas coordenadas (texto com posição absoluta, `x/2151`) e o esboço dentro da área tracejada, tabela de acessórios, lembretes e assinaturas com imagens. Se houver mais de 4 acessórios, a tabela cresce e a folha passa para duas páginas sem cortar linhas.
 
@@ -89,6 +89,7 @@ src/
 - Rascunho automático no navegador (chave própria), botão "Novo plano" com confirmação.
 - Revisão lista campos de peso/capacidade vazios e assinaturas em branco; avisa mas não bloqueia o PDF.
 - Campos numéricos aceitam vírgula decimal e seguem as regras de `parseNumero` do checklist (entrada ambígua como "5.000" não é adivinhada).
+- Se Peso da Carga e Capacidade Momentânea estão preenchidos mas o FU não pode ser calculado (valor ambíguo como 5.000, ou capacidade 0), a tela e a revisão avisam em vez de deixar o FU em branco sem explicação.
 - Nome do arquivo: `plano-icamento-AAAA-MM-DD-<carga>.pdf` (data local; carga limpa com `/[^\w-]/g`, omitida se vazia).
 - Se o `localStorage` falhar, funciona sem rascunho, com o mesmo aviso do checklist.
 

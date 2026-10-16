@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { acimaDe75Fu, formatarPeso, fu, textoPonto, unidadeDe } from './calc'
+import { acimaDe75Fu, formatarPeso, fu, fuNaoCalculavel, textoPonto, unidadeDe } from './calc'
 import { PONTOS } from './pontos'
 import { icamentoVazio } from './schema'
 
@@ -64,5 +64,19 @@ describe('textoPonto', () => {
     expect(textoPonto(com({}), ponto('pesoCarga'))).toBe('')
     expect(textoPonto(com({}), ponto('fuResultado'))).toBe('')
     expect(textoPonto(com({ lanca: '   ' }), ponto('lanca'))).toBe('')
+  })
+})
+
+describe('fuNaoCalculavel', () => {
+  it('true com peso ambíguo, acessório ambíguo ou capacidade 0', () => {
+    expect(fuNaoCalculavel(com({ pesoCarga: '5.000', capMomentanea: '20' }))).toBe(true)
+    expect(fuNaoCalculavel(com({ pesoCarga: '10', capMomentanea: '20', pesoAcessorios: '5.000' }))).toBe(true)
+    expect(fuNaoCalculavel(com({ pesoCarga: '10', capMomentanea: '0' }))).toBe(true)
+  })
+  it('false com valores válidos ou campos vazios', () => {
+    expect(fuNaoCalculavel(com({ pesoCarga: '10', capMomentanea: '20' }))).toBe(false)
+    expect(fuNaoCalculavel(com({ capMomentanea: '20' }))).toBe(false)
+    expect(fuNaoCalculavel(com({ pesoCarga: '10' }))).toBe(false)
+    expect(fuNaoCalculavel(com({ pesoCarga: ' ', capMomentanea: '20' }))).toBe(false)
   })
 })

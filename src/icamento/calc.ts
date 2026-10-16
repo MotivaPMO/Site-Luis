@@ -55,3 +55,9 @@ export function textoPonto(d: IcamentoData, p: Ponto): string {
   if (p.tipo === 'metros') return `${v} m`
   return v
 }
+
+/** Peso da carga e capacidade preenchidos, mas o FU não pode ser calculado (valor ambíguo, capacidade 0). */
+export function fuNaoCalculavel(d: IcamentoData): boolean {
+  const cheio = (c: string) => (d.campos[c] ?? '').trim() !== ''
+  return cheio('pesoCarga') && cheio('capMomentanea') && fu(d).percentual === null
+}

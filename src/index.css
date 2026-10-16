@@ -66,8 +66,8 @@ textarea { width: 100%; min-height: 90px; font-family: inherit; font-size: 1rem;
 .folha .acoes { display: flex; gap: 12px; margin-top: 14px; }
 .folha .acoes .btn { flex: 1; }
 .quadro-esboco { position: fixed; inset: 0; background: #fff; z-index: 30; display: flex; flex-direction: column; padding: 16px; gap: 12px; overflow: auto; }
-.quadro-esboco .acoes { display: flex; gap: 12px; }
-.quadro-esboco .acoes .btn { flex: 1; }
+.quadro-esboco > .acoes { display: flex; gap: 12px; }
+.quadro-esboco > .acoes .btn { flex: 1; }
 .linha-acessorio { background: #fff; border: 1px solid var(--borda); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
 .linha-acessorio .remover { margin-top: 4px; }
 .lembretes { background: #f0f3f3; border: 1px solid var(--borda); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: .85rem; line-height: 1.35; }

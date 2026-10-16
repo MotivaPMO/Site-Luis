@@ -19,3 +19,14 @@ export const icamentoVazio = (): IcamentoData => ({
   esboco: '',
   assinaturas: {},
 })
+
+export function rascunhoValido(d: IcamentoData): boolean {
+  return !(
+    typeof d.campos !== 'object' ||
+    d.campos === null ||
+    !Array.isArray(d.acessorios) ||
+    typeof d.esboco !== 'string' ||
+    typeof d.assinaturas !== 'object' ||
+    d.assinaturas === null
+  )
+}

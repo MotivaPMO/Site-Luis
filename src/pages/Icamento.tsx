@@ -6,7 +6,7 @@ import { FolhaCampo } from '../components/FolhaCampo'
 import { QuadroEsboco } from '../components/QuadroEsboco'
 import { SignaturePad } from '../components/SignaturePad'
 import { TabelaAcessorios } from '../components/TabelaAcessorios'
-import { acimaDe75Fu, unidadeDe } from '../icamento/calc'
+import { acimaDe75Fu, fuNaoCalculavel, unidadeDe } from '../icamento/calc'
 import { CAMPOS_CABECALHO, NOTA_ASSINATURA, RESPONSAVEIS, ROTULO_COMO_PESO } from '../icamento/campos'
 import { gerarPdf } from '../icamento/gerarPdf'
 import { LEMBRETES, LEMBRETE_FINAL, TITULO_LEMBRETES } from '../icamento/lembretes'
@@ -36,7 +36,9 @@ export default function Icamento() {
   const anterior = () => setEditando((i) => (i === null ? null : Math.max(0, i - 1)))
 
   const vazio = (chave: string) => !(data.campos[chave] ?? '').trim()
+  const MSG_FU = 'Não foi possível calcular o FU: confira os pesos e a capacidade (escreva 5000, sem ponto de milhar).'
   const pendentes = [
+    ...(fuNaoCalculavel(data) ? [MSG_FU] : []),
     ...CAMPOS_CABECALHO.filter((c) => vazio(c.id)).map((c) => c.label),
     ...(vazio('comoPeso') ? [ROTULO_COMO_PESO] : []),
     ...PONTOS.filter((p) => p.tipo !== 'calculado' && !OPCIONAIS.includes(p.id) && vazio(p.id)).map((p) => p.rotulo),
@@ -63,6 +65,8 @@ export default function Icamento() {
     if (window.confirm('Apagar tudo e começar um novo plano?')) {
       api.reset()
       setPasso(0)
+      setErro('')
+      setEditando(null)
     }
   }
 
@@ -109,6 +113,7 @@ export default function Icamento() {
             <button type="button" className="btn primario" onClick={() => setEditando(0)}>Preencher campos</button>
           </p>
           <DiagramaGuindaste data={data} onSelecionar={abrir} />
+          {fuNaoCalculavel(data) && <div className="aviso">{MSG_FU}</div>}
           {acimaDe75Fu(data) && (
             <div className="aviso">FU acima de 75%: solicite a emissão de um Plano de Rigging.</div>
           )}
