@@ -4,9 +4,12 @@ interface Props {
   label: string
   value: string
   onChange: (dataUrl: string) => void
+  largura?: number
+  altura?: number
+  dica?: string
 }
 
-export function SignaturePad({ label, value, onChange }: Props) {
+export function SignaturePad({ label, value, onChange, largura = 600, altura = 200, dica = 'Assine com o dedo ou mouse' }: Props) {
   const ref = useRef<HTMLCanvasElement>(null)
   const ultimo = useRef('')
   const desenhando = useRef(false)
@@ -33,8 +36,9 @@ export function SignaturePad({ label, value, onChange }: Props) {
   const iniciar = (e: React.PointerEvent<HTMLCanvasElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId)
     desenhando.current = true
-    const ctx = ref.current!.getContext('2d')!
-    ctx.lineWidth = 3
+    const c = ref.current!
+    const ctx = c.getContext('2d')!
+    ctx.lineWidth = 3 * (c.width / 600)
     ctx.lineCap = 'round'
     ctx.strokeStyle = '#111'
     const p = pos(e)
@@ -72,8 +76,9 @@ export function SignaturePad({ label, value, onChange }: Props) {
       <span className="rotulo">{label}</span>
       <canvas
         ref={ref}
-        width={600}
-        height={200}
+        width={largura}
+        height={altura}
+        style={{ aspectRatio: `${largura}/${altura}` }}
         aria-label={label}
         onPointerDown={iniciar}
         onPointerMove={mover}
@@ -81,7 +86,7 @@ export function SignaturePad({ label, value, onChange }: Props) {
         onPointerCancel={terminar}
       />
       <div className="acoes">
-        <small>Assine com o dedo ou mouse</small>
+        <small>{dica}</small>
         <button type="button" className="btn" onClick={limpar}>Limpar</button>
       </div>
     </div>
