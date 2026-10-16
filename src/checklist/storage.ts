@@ -19,31 +19,35 @@ export function getStore(): Store | null {
   }
 }
 
-export function loadDraft(store: Store | null): ChecklistData {
-  if (!store) return dadosVazios()
+export function lerRascunho<T extends object>(store: Store | null, chave: string, vazio: () => T): T {
+  if (!store) return vazio()
   try {
-    const bruto = store.getItem(CHAVE)
-    if (!bruto) return dadosVazios()
-    return { ...dadosVazios(), ...JSON.parse(bruto) }
+    const bruto = store.getItem(chave)
+    if (!bruto) return vazio()
+    return { ...vazio(), ...JSON.parse(bruto) }
   } catch {
-    return dadosVazios()
+    return vazio()
   }
 }
 
-export function saveDraft(store: Store | null, d: ChecklistData): boolean {
+export function salvarRascunho(store: Store | null, chave: string, d: object): boolean {
   if (!store) return false
   try {
-    store.setItem(CHAVE, JSON.stringify(d))
+    store.setItem(chave, JSON.stringify(d))
     return true
   } catch {
     return false
   }
 }
 
-export function clearDraft(store: Store | null): void {
+export function limparRascunho(store: Store | null, chave: string): void {
   try {
-    store?.removeItem(CHAVE)
+    store?.removeItem(chave)
   } catch {
     /* sem storage: nada a limpar */
   }
 }
+
+export const loadDraft = (store: Store | null): ChecklistData => lerRascunho(store, CHAVE, dadosVazios)
+export const saveDraft = (store: Store | null, d: ChecklistData): boolean => salvarRascunho(store, CHAVE, d)
+export const clearDraft = (store: Store | null): void => limparRascunho(store, CHAVE)
