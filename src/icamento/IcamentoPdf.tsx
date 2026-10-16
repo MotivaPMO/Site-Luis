@@ -90,14 +90,16 @@ export function IcamentoPdf({ data, esquemaSrc, logoSrc }: { data: IcamentoData;
           {PONTOS.map((p) => {
             const texto = textoPonto(data, p)
             if (!texto) return null
+            const base = p.h * 0.42 * ESCALA
+            const cabe = (p.w * ESCALA - 4) / (0.6 * texto.length) // Helvetica-Bold ≈ 0.6 × fontSize por caractere
             return (
               <View
                 key={p.id}
-                style={{ position: 'absolute', left: pctL(p.x), top: pctA(p.y), width: pctL(p.w), height: pctA(p.h), justifyContent: 'center', paddingLeft: 2 }}
+                style={{ position: 'absolute', left: pctL(p.x), top: pctA(p.y), width: pctL(p.w), height: pctA(p.h), justifyContent: 'center', paddingLeft: 2, overflow: 'hidden' }}
               >
-                <Text style={{ fontSize: p.h * 0.42 * ESCALA, fontFamily: 'Helvetica-Bold', color: '#0b3d91' }}>
-                  {texto}
-                </Text>
+                <View style={{ width: 2000 }}>
+                  <Text style={{ fontSize: Math.max(4, Math.min(base, cabe)), fontFamily: 'Helvetica-Bold', color: '#0b3d91' }}>{texto}</Text>
+                </View>
               </View>
             )
           })}

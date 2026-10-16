@@ -51,4 +51,17 @@ describe('IcamentoPdf', () => {
     expect(buf.subarray(0, 4).toString()).toBe('%PDF')
     expect(paginas(buf)).toBeGreaterThanOrEqual(2)
   })
+
+  it('valores longos continuam em 1 página', async () => {
+    const d = dadosCheios()
+    d.campos.pesoCarga = '123456789012345678901234567890'
+    d.campos.lanca = 'Lança com uma descrição absurdamente longa para testar o limite da caixa 123456'
+    const buf = await renderToBuffer(<IcamentoPdf data={d} esquemaSrc={esquema} />)
+    expect(buf.subarray(0, 4).toString()).toBe('%PDF')
+    expect(paginas(buf)).toBe(1)
+    if (process.env.SAVE_PDF) {
+      mkdirSync('tmp', { recursive: true })
+      writeFileSync('tmp/amostra-icamento-longo.pdf', buf)
+    }
+  })
 })
