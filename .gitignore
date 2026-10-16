@@ -1,0 +1,10 @@
+node_modules
+dist
+tmp
+.superpowers
+
+# Documentos originais da empresa (nao versionar)
+*.xlsx
+*.pdf
+shared image*.jpg
+assets-origem/
