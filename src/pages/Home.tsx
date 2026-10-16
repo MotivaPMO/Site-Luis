@@ -13,10 +13,10 @@ export default function Home() {
           <strong>Checklist</strong>
           <span>Plano para Movimentação de Carga</span>
         </Link>
-        <div className="card disabled" aria-disabled="true">
+        <Link to="/icamento" className="card">
           <strong>Plano de Içamento</strong>
-          <span>Em breve</span>
-        </div>
+          <span>Plano Básico de Içamento de Carga</span>
+        </Link>
         <div className="card disabled" aria-disabled="true">
           <strong>Ferramentas</strong>
           <span>Em breve</span>
