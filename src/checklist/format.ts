@@ -10,6 +10,11 @@ export function formatarHora(hhmm: string): string {
   return m ? `${m[1]} h : ${m[2]} min` : ''
 }
 
+export function dataLocalISO(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}
+
 export function nomeArquivo(d: ChecklistData, hoje: string): string {
   const data = d.campos.data || hoje
   const pt = (d.campos.numeroPT ?? '').replace(/[^\w-]/g, '')

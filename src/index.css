@@ -35,7 +35,7 @@ input[type=text], input[type=date], input[type=time], select { width: 100%; min-
 .snn { display: flex; gap: 8px; margin-bottom: 8px; }
 .marcas label { display: flex; align-items: center; gap: 10px; min-height: 40px; }
 .marcas input { width: 22px; height: 22px; }
-.assinatura canvas { width: 100%; height: 150px; border: 2px dashed var(--borda); border-radius: 8px; background: #fff; touch-action: none; display: block; }
+.assinatura canvas { width: 100%; height: auto; aspect-ratio: 3/1; border: 2px dashed var(--borda); border-radius: 8px; background: #fff; touch-action: none; display: block; }
 .assinatura .acoes { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
 .aviso { background: #fff4e0; border-left: 4px solid var(--aviso); padding: 8px 10px; margin: 8px 0; border-radius: 4px; color: #6b4000; }
 .pendentes { margin: 8px 0 16px; padding-left: 20px; }

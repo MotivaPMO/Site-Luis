@@ -2,8 +2,10 @@ import type { ChecklistData } from './schema'
 
 export function parseNumero(s: string | undefined): number | null {
   if (!s) return null
-  const t = s.trim().replace(',', '.')
+  let t = s.trim().replace(/\s*%$/, '')
   if (t === '') return null
+  if (t.includes(',')) t = t.replace(/\./g, '').replace(',', '.')
+  else if (/^\d{1,3}(\.\d{3})+$/.test(t)) return null // ambíguo: nunca adivinha
   const n = Number(t)
   return Number.isFinite(n) ? n : null
 }

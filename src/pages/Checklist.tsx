@@ -44,7 +44,7 @@ export default function Checklist() {
         <Link to="/" style={{ color: '#fff' }} aria-label="Início">⌂</Link>
         <h1>Plano para Movimentação de Carga</h1>
       </header>
-      {!api.storageOk && <div className="aviso">Rascunho automático indisponível neste navegador.</div>}
+      {!api.storageOk && <div className="aviso">Não foi possível salvar o rascunho automático neste navegador.</div>}
 
       <nav className="passos" aria-label="Etapas">
         {PASSOS.map((p, i) => (

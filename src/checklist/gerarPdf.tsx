@@ -1,5 +1,5 @@
 import logo from '../assets/logo-ccr-engemob.png'
-import { nomeArquivo } from './format'
+import { dataLocalISO, nomeArquivo } from './format'
 import type { ChecklistData } from './schema'
 
 export async function gerarPdf(data: ChecklistData): Promise<void> {
@@ -8,7 +8,7 @@ export async function gerarPdf(data: ChecklistData): Promise<void> {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = nomeArquivo(data, new Date().toISOString().slice(0, 10))
+  a.download = nomeArquivo(data, dataLocalISO(new Date()))
   a.click()
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }

@@ -34,4 +34,12 @@ describe('definição do checklist', () => {
     for (const id of ['capacidadeRaio', 'relacao', 'lib13.peso', 'numeroPT', 'data']) expect(ids).toContain(id)
     expect(itens.map((i) => i.id)).toContain('lib2')
   })
+
+  it('campos de peso/capacidade têm Ton como primeira unidade', () => {
+    const campos = [...grupos.flatMap((g) => g.campos), ...itens.flatMap((i) => i.campos ?? [])]
+    for (const id of ['capacidadeRaio', 'lib13.peso']) {
+      const c = campos.find((x) => x.id === id)
+      expect(c && 'unidades' in c ? c.unidades?.[0] : undefined).toBe('Ton')
+    }
+  })
 })

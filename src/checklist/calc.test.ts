@@ -14,6 +14,19 @@ describe('parseNumero', () => {
     expect(parseNumero(undefined)).toBeNull()
     expect(parseNumero('abc')).toBeNull()
   })
+  it('milhar pt-BR com vírgula decimal', () => {
+    expect(parseNumero('1.000,5')).toBe(1000.5)
+  })
+  it('ambíguo "9.040" retorna null (nunca adivinha)', () => {
+    expect(parseNumero('9.040')).toBeNull()
+  })
+  it('remove % final e espaços antes dele', () => {
+    expect(parseNumero('80%')).toBe(80)
+    expect(parseNumero('80,5 %')).toBe(80.5)
+  })
+  it('ponto decimal simples', () => {
+    expect(parseNumero('1.5')).toBe(1.5)
+  })
 })
 
 describe('emKg', () => {
@@ -57,5 +70,11 @@ describe('acimaDe75', () => {
     expect(acimaDe75(com({ 'lib13.peso': '16', capacidadeRaio: '20' }))).toBe(true)
     expect(acimaDe75(com({ 'lib13.peso': '15', capacidadeRaio: '20' }))).toBe(false)
     expect(acimaDe75(com({}))).toBe(false)
+  })
+  it('relação manual com % conta', () => {
+    expect(acimaDe75(com({ relacao: '80%' }))).toBe(true)
+  })
+  it('peso ambíguo "9.040" deixa a relação automática em branco', () => {
+    expect(relacaoAutoTexto(com({ 'lib13.peso': '9.040', 'lib13.peso.unidade': 'Kg', capacidadeRaio: '20' }))).toBe('')
   })
 })
