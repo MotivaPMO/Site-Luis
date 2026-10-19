@@ -30,6 +30,13 @@ function dadosCheios(linhas = 4): IcamentoData {
 const paginas = (buf: Buffer) => Number(/\/Count (\d+)/.exec(buf.toString('latin1'))?.[1])
 
 describe('IcamentoPdf', () => {
+  it('gera um PDF válido de 1 página com supervisor e projeto no cabeçalho', async () => {
+    const d = { ...dadosCheios(), campos: { ...dadosCheios().campos, supervisor: 'Carlos Mendes', projeto: 'Projeto Ponte Sul' } }
+    const buf = await renderToBuffer(<IcamentoPdf data={d} esquemaSrc={esquema} />)
+    expect(buf.subarray(0, 4).toString()).toBe('%PDF')
+    expect(paginas(buf)).toBe(1)
+  })
+
   it('gera um PDF válido com dados vazios', async () => {
     const buf = await renderToBuffer(<IcamentoPdf data={icamentoVazio()} esquemaSrc={esquema} />)
     expect(buf.subarray(0, 4).toString()).toBe('%PDF')

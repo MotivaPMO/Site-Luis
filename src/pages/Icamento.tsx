@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { CampoInput } from '../components/CampoInput'
 import { DiagramaGuindaste } from '../components/DiagramaGuindaste'
 import { FolhaCampo } from '../components/FolhaCampo'
+import { PastaDestino } from '../components/PastaDestino'
 import { QuadroEsboco } from '../components/QuadroEsboco'
 import { SignaturePad } from '../components/SignaturePad'
 import { TabelaAcessorios } from '../components/TabelaAcessorios'
@@ -12,6 +13,8 @@ import { gerarPdf } from '../icamento/gerarPdf'
 import { LEMBRETES, LEMBRETE_FINAL, TITULO_LEMBRETES } from '../icamento/lembretes'
 import { ID_ESBOCO, ORDEM_EDICAO, PONTOS } from '../icamento/pontos'
 import { useIcamento } from '../icamento/useIcamento'
+import { textoResultado } from '../lib/pasta'
+import { usePastaDestino } from '../lib/usePastaDestino'
 
 const PASSOS = ['Dados', 'Esquema', 'Acessórios', 'Assinaturas'] as const
 const OPCIONAIS = ['pesoAcessorios', 'pesoContrapeso']
@@ -23,6 +26,8 @@ export default function Icamento() {
   const [editando, setEditando] = useState<number | null>(null)
   const [gerando, setGerando] = useState(false)
   const [erro, setErro] = useState('')
+  const [aviso, setAviso] = useState('')
+  const destino = usePastaDestino()
 
   const unidade = unidadeDe(data)
   const idAtual = editando === null ? null : ORDEM_EDICAO[editando]
@@ -52,8 +57,9 @@ export default function Icamento() {
   const baixar = async () => {
     setGerando(true)
     setErro('')
+    setAviso('')
     try {
-      await gerarPdf(data)
+      setAviso(textoResultado(await destino.emitir((pasta) => gerarPdf(data, pasta))))
     } catch (e) {
       setErro(`Não foi possível gerar o PDF: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
@@ -66,6 +72,7 @@ export default function Icamento() {
       api.reset()
       setPasso(0)
       setErro('')
+      setAviso('')
       setEditando(null)
     }
   }
@@ -178,6 +185,8 @@ export default function Icamento() {
             <p>Tudo preenchido.</p>
           )}
           {erro && <div className="aviso">{erro}</div>}
+          {aviso && <div className="aviso ok">{aviso}</div>}
+          <PastaDestino suportado={destino.suportado} nome={destino.nome} escolher={destino.escolher} />
           <p style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <button type="button" className="btn primario" onClick={baixar} disabled={gerando}>
               {gerando ? 'Gerando…' : 'Gerar PDF'}

@@ -26,6 +26,9 @@ const s = StyleSheet.create({
   snnTitulo: { width: 26, textAlign: 'center' },
   assin: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
   assinImg: { width: 90, height: 26, objectFit: 'contain' },
+  idBox: { width: 150, padding: 3, borderLeftWidth: 1, borderColor: PRETO, alignSelf: 'stretch' },
+  idRotulo: { fontSize: 6, fontFamily: 'Helvetica-Bold' },
+  idValor: { fontSize: 7.5, marginBottom: 2 },
 })
 
 function textoCampo(c: Campo, d: ChecklistData): string {
@@ -99,6 +102,12 @@ export function ChecklistPdf({ data, logoSrc }: { data: ChecklistData; logoSrc?:
         <View style={s.header}>
           {logoSrc && <Image src={logoSrc} style={s.logo} />}
           <Text style={s.titulo}>PLANO PARA MOVIMENTAÇÃO DE CARGA</Text>
+          <View style={s.idBox}>
+            <Text style={s.idRotulo}>Supervisor:</Text>
+            <Text style={s.idValor}>{data.campos.supervisor ?? ''}</Text>
+            <Text style={s.idRotulo}>Projeto:</Text>
+            <Text style={s.idValor}>{data.campos.projeto ?? ''}</Text>
+          </View>
         </View>
         <View style={s.banner}>
           <Text style={s.bannerTexto}>DIMENSIONAMENTO DA MÁQUINA E ACESSÓRIOS</Text>

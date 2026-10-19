@@ -1,6 +1,8 @@
 import type { Campo } from '../checklist/definicao'
 
 export const CAMPOS_CABECALHO: Campo[] = [
+  { kind: 'texto', id: 'supervisor', label: 'Supervisor' },
+  { kind: 'texto', id: 'projeto', label: 'Projeto' },
   { kind: 'texto', id: 'local', label: 'Local' },
   { kind: 'texto', id: 'atividade', label: 'Atividade' },
   { kind: 'texto', id: 'equipamento', label: 'Equipamento de Guindar Utilizado (tipo e TAG)' },

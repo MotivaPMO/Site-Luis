@@ -70,3 +70,13 @@ export const GRUPOS_LIBERACAO: Grupo[] = [
     assinaturas: [{ id: 'opAssinatura', label: 'Assinatura' }],
   },
 ]
+
+/** Não existe na planilha original; usado no cabeçalho do PDF e no nome do arquivo. */
+export const GRUPO_IDENTIFICACAO: Grupo = {
+  id: 'identificacao',
+  titulo: 'IDENTIFICAÇÃO (aparece no nome do arquivo PDF)',
+  campos: [
+    { kind: 'texto', id: 'supervisor', label: 'Supervisor' },
+    { kind: 'texto', id: 'projeto', label: 'Projeto' },
+  ],
+}

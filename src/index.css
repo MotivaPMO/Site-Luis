@@ -72,3 +72,6 @@ textarea { width: 100%; min-height: 90px; font-family: inherit; font-size: 1rem;
 .linha-acessorio .remover { margin-top: 4px; }
 .lembretes { background: #f0f3f3; border: 1px solid var(--borda); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: .85rem; line-height: 1.35; }
 .lembretes ul { margin: 6px 0 0; padding-left: 18px; }
+.aviso.ok { background: #e6f4ea; border-left-color: #1e7a3c; color: #14502a; }
+.pasta-destino { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 8px 0 12px; }
+.pasta-destino .rotulo { margin: 0; flex: 1 1 220px; }

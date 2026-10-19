@@ -64,7 +64,12 @@ export function IcamentoPdf({ data, esquemaSrc, logoSrc }: { data: IcamentoData;
             <Text style={s.titulo}>Plano Básico de Içamento de Carga</Text>
             <Text style={s.subtitulo}>(Guindastes)</Text>
           </View>
-          <View style={[s.cel, { flex: 154 }]} />
+          <View style={[s.cel, { flex: 154 }]}>
+            <Text style={s.rotulo}>Supervisor:</Text>
+            <Text style={s.valor}>{campos.supervisor ?? ''}</Text>
+            <Text style={s.rotulo}>Projeto:</Text>
+            <Text style={s.valor}>{campos.projeto ?? ''}</Text>
+          </View>
         </View>
         <View style={s.linha}>
           <Celula {...cab('local')} flex={193} />

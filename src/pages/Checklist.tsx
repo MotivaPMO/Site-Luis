@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { GRUPOS_LIBERACAO, GRUPOS_MAQUINA, TITULO_LIBERACAO } from '../checklist/grupos'
+import { GRUPOS_LIBERACAO, GRUPOS_MAQUINA, GRUPO_IDENTIFICACAO, TITULO_LIBERACAO } from '../checklist/grupos'
 import { SECOES } from '../checklist/itens'
 import { useChecklist } from '../checklist/useChecklist'
 import { gerarPdf } from '../checklist/gerarPdf'
 import { GrupoView } from '../components/GrupoView'
 import { ItemView } from '../components/ItemView'
+import { PastaDestino } from '../components/PastaDestino'
+import { textoResultado } from '../lib/pasta'
+import { usePastaDestino } from '../lib/usePastaDestino'
 
 const PASSOS = ['Máquina', 'Equipe', 'Liberação', 'Dados', 'Revisar'] as const
 
@@ -14,16 +17,22 @@ export default function Checklist() {
   const [passo, setPasso] = useState(0)
   const [gerando, setGerando] = useState(false)
   const [erro, setErro] = useState('')
+  const [aviso, setAviso] = useState('')
+  const destino = usePastaDestino()
 
-  const pendentes = SECOES.flatMap((s) =>
-    s.itens.filter((i) => !api.data.respostas[i.id]).map((i) => `${s.titulo.split(' ')[0]} ${i.texto.slice(0, 70)}…`),
-  )
+  const pendentes = [
+    ...GRUPO_IDENTIFICACAO.campos.filter((c) => !(api.data.campos[c.id] ?? '').trim()).map((c) => `${c.label} (nome do arquivo PDF)`),
+    ...SECOES.flatMap((s) =>
+      s.itens.filter((i) => !api.data.respostas[i.id]).map((i) => `${s.titulo.split(' ')[0]} ${i.texto.slice(0, 70)}…`),
+    ),
+  ]
 
   const baixar = async () => {
     setGerando(true)
     setErro('')
+    setAviso('')
     try {
-      await gerarPdf(api.data)
+      setAviso(textoResultado(await destino.emitir((pasta) => gerarPdf(api.data, pasta))))
     } catch (e) {
       setErro(`Não foi possível gerar o PDF: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
@@ -35,6 +44,8 @@ export default function Checklist() {
     if (window.confirm('Apagar tudo e começar um novo checklist?')) {
       api.reset()
       setPasso(0)
+      setErro('')
+      setAviso('')
     }
   }
 
@@ -75,7 +86,7 @@ export default function Checklist() {
       {passo === 3 && (
         <>
           <h2>{TITULO_LIBERACAO}</h2>
-          {GRUPOS_LIBERACAO.map((g) => (
+          {[GRUPO_IDENTIFICACAO, ...GRUPOS_LIBERACAO].map((g) => (
             <GrupoView key={g.id} grupo={g} api={api} />
           ))}
         </>
@@ -97,6 +108,8 @@ export default function Checklist() {
             <p>Todos os itens foram respondidos.</p>
           )}
           {erro && <div className="aviso">{erro}</div>}
+          {aviso && <div className="aviso ok">{aviso}</div>}
+          <PastaDestino suportado={destino.suportado} nome={destino.nome} escolher={destino.escolher} />
           <p style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <button type="button" className="btn primario" onClick={baixar} disabled={gerando}>
               {gerando ? 'Gerando…' : 'Gerar PDF'}

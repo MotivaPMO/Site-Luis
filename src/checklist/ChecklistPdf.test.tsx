@@ -25,7 +25,16 @@ function dadosCheios(): ChecklistData {
   return d
 }
 
+const paginas = (buf: Buffer) => Number(/\/Count (\d+)/.exec(buf.toString('latin1'))?.[1])
+
 describe('ChecklistPdf', () => {
+  it('gera um PDF válido com supervisor e projeto no cabeçalho', async () => {
+    const d = { ...dadosVazios(), campos: { supervisor: 'Carlos Mendes', projeto: 'Projeto Ponte Sul' } }
+    const buf = await renderToBuffer(<ChecklistPdf data={d} />)
+    expect(buf.subarray(0, 4).toString()).toBe('%PDF')
+    expect(paginas(buf)).toBe(1)
+  })
+
   it('gera um PDF válido com dados vazios', async () => {
     const buf = await renderToBuffer(<ChecklistPdf data={dadosVazios()} />)
     expect(buf.subarray(0, 4).toString()).toBe('%PDF')

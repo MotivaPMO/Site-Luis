@@ -1,14 +1,17 @@
 import logo from '../assets/logo-ccr-engemob.png'
-import { dataLocalISO, nomeArquivo } from './format'
+import { nomeArquivoPdf } from '../lib/arquivo'
+import { ambienteReal, gravarPdf, type PastaHandle, type Resultado } from '../lib/pasta'
+import { dataLocalISO } from './format'
 import type { ChecklistData } from './schema'
 
-export async function gerarPdf(data: ChecklistData): Promise<void> {
+export async function gerarPdf(data: ChecklistData, pasta: PastaHandle | null): Promise<Resultado> {
   const [{ pdf }, { ChecklistPdf }] = await Promise.all([import('@react-pdf/renderer'), import('./ChecklistPdf')])
   const blob = await pdf(<ChecklistPdf data={data} logoSrc={logo} />).toBlob()
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = nomeArquivo(data, dataLocalISO(new Date()))
-  a.click()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
+  const nome = nomeArquivoPdf({
+    tipo: 'Checklist',
+    supervisor: data.campos.supervisor,
+    projeto: data.campos.projeto,
+    data: data.campos.data || dataLocalISO(new Date()),
+  })
+  return gravarPdf(ambienteReal(), pasta, blob, nome)
 }
