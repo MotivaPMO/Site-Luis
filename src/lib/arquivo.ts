@@ -1,6 +1,6 @@
 export interface PartesNome {
   tipo: string
-  supervisor?: string
+  responsavel?: string
   projeto?: string
   data: string
 }
@@ -16,8 +16,8 @@ function limpar(s: string | undefined): string {
     .replace(/[\s.]+$/, '')
 }
 
-/** "Tipo - Supervisor - Projeto - Data.pdf"; supervisor/projeto vazios são omitidos. */
-export function nomeArquivoPdf({ tipo, supervisor, projeto, data }: PartesNome): string {
-  const partes = [tipo, limpar(supervisor), limpar(projeto), data].filter((p) => p !== '')
+/** "Tipo - Responsável - Projeto - Data.pdf"; responsável e projeto vazios são omitidos. */
+export function nomeArquivoPdf({ tipo, responsavel, projeto, data }: PartesNome): string {
+  const partes = [tipo, limpar(responsavel), limpar(projeto), data].filter((p) => p !== '')
   return `${partes.join(' - ')}.pdf`
 }

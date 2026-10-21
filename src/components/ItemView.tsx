@@ -3,7 +3,6 @@ import type { ChecklistApi } from '../checklist/useChecklist'
 import { acimaDe75 } from '../checklist/calc'
 import { CampoInput } from './CampoInput'
 import { SimNaoNa } from './SimNaoNa'
-import { SignaturePad } from './SignaturePad'
 
 export function ItemView({ item, numero, api }: { item: Item; numero: number; api: ChecklistApi }) {
   const { data } = api
@@ -36,13 +35,6 @@ export function ItemView({ item, numero, api }: { item: Item; numero: number; ap
       {item.campos?.map((c) => (
         <CampoInput key={c.id} campo={c} campos={data.campos} onChange={api.setCampo} />
       ))}
-      {item.assinatura && (
-        <SignaturePad
-          label={item.assinatura.label}
-          value={data.assinaturas[item.assinatura.id] ?? ''}
-          onChange={(url) => api.setAssinatura(item.assinatura!.id, url)}
-        />
-      )}
     </div>
   )
 }

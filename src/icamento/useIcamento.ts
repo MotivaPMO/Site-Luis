@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { getStore, lerRascunho, limparRascunho, salvarRascunho } from '../checklist/storage'
-import { copiarOperador } from './pessoa'
+import type { ChecklistData } from '../checklist/schema'
+import { getStore, lerRascunho, limparRascunho, loadDraft, salvarRascunho } from '../checklist/storage'
 import { icamentoVazio, linhaVazia, rascunhoValido, type IcamentoData, type LinhaAcessorio } from './schema'
 
 const CHAVE = 'site-luis:icamento:v1'
 
 export interface IcamentoApi {
   data: IcamentoData
+  /** Dados gerais e assinaturas preenchidos no Checklist (somente leitura aqui). */
+  dados: ChecklistData
   storageOk: boolean
   setCampo(chave: string, valor: string): void
   setAcessorio(i: number, campo: keyof LinhaAcessorio, valor: string): void
   addLinha(): void
   removeLinha(i: number): void
   setEsboco(url: string): void
-  setAssinatura(id: string, url: string): void
-  mesmaPessoa(): void
   reset(): void
 }
 
@@ -24,6 +24,7 @@ export function useIcamento(): IcamentoApi {
     const d = lerRascunho(store, CHAVE, icamentoVazio)
     return rascunhoValido(d) ? d : icamentoVazio()
   })
+  const [dados] = useState<ChecklistData>(() => loadDraft(store))
   const [storageOk, setStorageOk] = useState(store !== null)
 
   useEffect(() => {
@@ -50,18 +51,10 @@ export function useIcamento(): IcamentoApi {
     setData((d) => ({ ...d, esboco: url }))
   }, [])
 
-  const setAssinatura = useCallback((id: string, url: string) => {
-    setData((d) => ({ ...d, assinaturas: { ...d.assinaturas, [id]: url } }))
-  }, [])
-
-  const mesmaPessoa = useCallback(() => {
-    setData((d) => copiarOperador(d))
-  }, [])
-
   const reset = useCallback(() => {
     limparRascunho(store, CHAVE)
     setData(icamentoVazio())
   }, [store])
 
-  return { data, storageOk, setCampo, setAcessorio, addLinha, removeLinha, setEsboco, setAssinatura, mesmaPessoa, reset }
+  return { data, dados, storageOk, setCampo, setAcessorio, addLinha, removeLinha, setEsboco, reset }
 }

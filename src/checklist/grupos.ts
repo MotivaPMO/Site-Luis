@@ -9,9 +9,6 @@ export const GRUPOS_MAQUINA: Grupo[] = [
       { kind: 'texto', id: 'raio', label: 'Raio de operação (m)', inputMode: 'decimal' },
       { kind: 'texto', id: 'capacidadeRaio', label: 'Capacidade da máquina p/ o raio (m)', inputMode: 'decimal', unidades: ['Ton', 'Kg'] },
       { kind: 'escolha', id: 'quadrante', label: 'Quadrante da operação', opcoes: ['Frontal', 'Lateral'] },
-      { kind: 'texto', id: 'lanca', label: 'Comprimento da lança (m)', inputMode: 'decimal' },
-      { kind: 'texto', id: 'jib', label: 'Comprimento do Jib (m)', inputMode: 'decimal' },
-      { kind: 'texto', id: 'relacao', label: 'Relação Peso/Capacidade da máquina p/ o raio', inputMode: 'decimal', calculado: true },
     ],
   },
   {
@@ -56,7 +53,7 @@ export const GRUPOS_LIBERACAO: Grupo[] = [
     titulo: 'SEGURANÇA DO TRABALHO',
     campos: [
       { kind: 'texto', id: 'segNome', label: 'Nome' },
-      { kind: 'texto', id: 'segMatricula', label: 'Matrícula' },
+      { kind: 'texto', id: 'segEmpresa', label: 'Empresa' },
     ],
     assinaturas: [{ id: 'segAssinatura', label: 'Assinatura' }],
   },
@@ -65,18 +62,38 @@ export const GRUPOS_LIBERACAO: Grupo[] = [
     titulo: 'OPERADOR',
     campos: [
       { kind: 'texto', id: 'opNome', label: 'Nome' },
-      { kind: 'texto', id: 'opMatricula', label: 'Matrícula' },
+      { kind: 'texto', id: 'opEmpresa', label: 'Empresa' },
     ],
     assinaturas: [{ id: 'opAssinatura', label: 'Assinatura' }],
   },
 ]
 
-/** Não existe na planilha original; usado no cabeçalho do PDF e no nome do arquivo. */
-export const GRUPO_IDENTIFICACAO: Grupo = {
-  id: 'identificacao',
-  titulo: 'IDENTIFICAÇÃO (aparece no nome do arquivo PDF)',
+/** Dados gerais da atividade: não existem na planilha; saem no PDF do Plano de Içamento, e o responsável e o projeto também no cabeçalho do checklist e no nome do arquivo. */
+export const GRUPO_ATIVIDADE: Grupo = {
+  id: 'atividade',
+  titulo: 'IDENTIFICAÇÃO DA ATIVIDADE',
   campos: [
-    { kind: 'texto', id: 'supervisor', label: 'Supervisor' },
+    { kind: 'texto', id: 'responsavel', label: 'Responsável pela atividade' },
     { kind: 'texto', id: 'projeto', label: 'Projeto' },
+    { kind: 'texto', id: 'local', label: 'Local' },
+    { kind: 'texto', id: 'atividade', label: 'Atividade' },
+    { kind: 'texto', id: 'equipamento', label: 'Equipamento de Guindar Utilizado (tipo e TAG)' },
+    { kind: 'texto', id: 'carga', label: 'Carga/Peça' },
+    { kind: 'texto', id: 'gerencia', label: 'Gerência' },
+    { kind: 'texto', id: 'comoPeso', label: 'Como foi obtido o peso da carga?', multilinha: true },
   ],
 }
+
+/** Só aparece no PDF do Plano de Içamento. */
+export const GRUPO_AMARRACAO: Grupo = {
+  id: 'amarracao',
+  titulo: 'RESPONSÁVEL PELA AMARRAÇÃO DA CARGA',
+  campos: [
+    { kind: 'texto', id: 'respNome', label: 'Nome' },
+    { kind: 'texto', id: 'respEmpresa', label: 'Empresa' },
+  ],
+  assinaturas: [{ id: 'respAssinatura', label: 'Assinatura' }],
+}
+
+/** Tela única de Dados do checklist (a seção 4 do PDF usa só GRUPOS_LIBERACAO). */
+export const GRUPOS_DADOS: Grupo[] = [GRUPO_ATIVIDADE, ...GRUPOS_LIBERACAO, GRUPO_AMARRACAO]

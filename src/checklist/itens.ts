@@ -1,9 +1,7 @@
 import type { Secao } from './definicao'
 
-const especialista = (n: number) => ({
-  campos: [{ kind: 'texto' as const, id: `lib${n}.especialista`, label: 'Nome Especialista' }],
-  assinatura: { id: `lib${n}.assinatura`, label: 'Assinatura' },
-})
+const NIVEIS = ['Bom', 'Regular', 'Ruim']
+const nivel = (id: string, label: string) => ({ kind: 'escolha' as const, id: `eq1.${id}`, label, opcoes: NIVEIS })
 
 export const SECOES: Secao[] = [
   {
@@ -13,12 +11,12 @@ export const SECOES: Secao[] = [
       {
         id: 'eq1',
         texto: 'Acessórios de movimentação de carga, inspecionados e em boas condições? (capacidade de carga deve ser conhecida).',
-        marcas: [
-          { id: 'cintas', label: 'Cintas' },
-          { id: 'cabos', label: 'Cabos' },
-          { id: 'manilhas', label: 'Manilhas' },
-          { id: 'ganchos', label: 'Ganchos (com trava)' },
-          { id: 'estropos', label: 'Estropos' },
+        campos: [
+          nivel('cintas', 'Cintas'),
+          nivel('cabos', 'Cabos'),
+          nivel('manilhas', 'Manilhas'),
+          nivel('ganchos', 'Ganchos (com trava)'),
+          nivel('estropos', 'Estropos'),
         ],
       },
       { id: 'eq2', texto: 'Material para sinalização e isolamento disponível?' },
@@ -31,29 +29,12 @@ export const SECOES: Secao[] = [
     titulo: '2. LIBERAÇÃO DO SERVIÇO E AMBIENTE',
     itens: [
       { id: 'lib1', texto: 'PT e APR de movimentação de carga está disponível e conhecida pela equipe executante?' },
-      {
-        id: 'lib2',
-        texto: 'Plano de Rigging está disponível?',
-        marcas: [
-          { id: 'relacao75', label: 'Relação Peso/Capacidade da máquina p/ o raio maior que 75%' },
-          { id: 'duasMaquinas', label: 'Movimentação que envolva mais de uma máquina de carga simultaneamente' },
-          { id: 'cotaNegativa', label: 'Içamento ocorra em cota negativa (abaixo do nível zero onde está localizado o guindaste)' },
-          { id: 'cinquentaTon', label: 'Movimentação de carga maior ou igual a 50 ton' },
-        ],
-      },
+      { id: 'lib2', texto: 'Plano de Rigging está disponível?' },
       { id: 'lib3', texto: 'Operador autorizado certificado?' },
       { id: 'lib4', texto: 'Sinaleiro autorizado certificado?' },
       { id: 'lib5', texto: 'Definida área para isolamento físico?' },
-      {
-        id: 'lib6',
-        texto: 'Se no local de patolamento for identificado solos de brita, grama sem compactação, galerias ou caixas de águas pluviais e industriais, envelopes elétricos, tampas de caixas de passagem e canaletas, foi avaliado por especialista?',
-        ...especialista(6),
-      },
-      {
-        id: 'lib7',
-        texto: 'Para movimentações sobre pontilhões, pieres e próximas a cristas de taludes foi consultado a área especialista de civil?',
-        ...especialista(7),
-      },
+      { id: 'lib6', texto: 'Se no local de patolamento for identificado solos de brita, grama sem compactação, galerias ou caixas de águas pluviais e industriais, envelopes elétricos, tampas de caixas de passagem e canaletas, foi avaliado por especialista?' },
+      { id: 'lib7', texto: 'Para movimentações sobre pontilhões, pieres e próximas a cristas de taludes foi consultado a área especialista de civil?' },
       { id: 'lib8', texto: 'Indicação da Carga Máxima de Trabalho Permitida e Tabela de Cargas disponíveis?' },
       { id: 'lib9', texto: 'Equipamentos de combate a incêndio, saídas de emergências e rotas de fugas desobstruídas?' },
       { id: 'lib10', texto: 'Solicitada a “AUTORIZAÇÃO DE INTERDIÇÃO DE RUAS” junto a área responsável, caso a movimentação de carga necessite interromper alguma via?' },

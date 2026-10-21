@@ -1,14 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CampoInput } from '../components/CampoInput'
 import { DiagramaGuindaste } from '../components/DiagramaGuindaste'
 import { FolhaCampo } from '../components/FolhaCampo'
 import { PastaDestino } from '../components/PastaDestino'
 import { QuadroEsboco } from '../components/QuadroEsboco'
-import { SignaturePad } from '../components/SignaturePad'
 import { TabelaAcessorios } from '../components/TabelaAcessorios'
 import { acimaDe75Fu, fuNaoCalculavel, unidadeDe } from '../icamento/calc'
-import { CAMPOS_CABECALHO, NOTA_ASSINATURA, RESPONSAVEIS, ROTULO_COMO_PESO } from '../icamento/campos'
+import { RESPONSAVEIS } from '../icamento/campos'
 import { gerarPdf } from '../icamento/gerarPdf'
 import { LEMBRETES, LEMBRETE_FINAL, TITULO_LEMBRETES } from '../icamento/lembretes'
 import { ID_ESBOCO, ORDEM_EDICAO, PONTOS } from '../icamento/pontos'
@@ -16,12 +14,26 @@ import { useIcamento } from '../icamento/useIcamento'
 import { textoResultado } from '../lib/pasta'
 import { usePastaDestino } from '../lib/usePastaDestino'
 
-const PASSOS = ['Dados', 'Esquema', 'Acessórios', 'Assinaturas'] as const
+const PASSOS = ['Esquema', 'Acessórios', 'Revisar'] as const
 const OPCIONAIS = ['pesoAcessorios', 'pesoContrapeso']
+const MSG_FU = 'Não foi possível calcular o FU: confira os pesos e a capacidade (escreva 5000, sem ponto de milhar).'
+
+/** Dados gerais que o Plano de Içamento usa e que são preenchidos no Checklist, na tela de Dados. */
+const DADOS_DO_CHECKLIST = [
+  { id: 'responsavel', rotulo: 'Responsável pela atividade' },
+  { id: 'projeto', rotulo: 'Projeto' },
+  { id: 'data', rotulo: 'Data' },
+  { id: 'local', rotulo: 'Local' },
+  { id: 'atividade', rotulo: 'Atividade' },
+  { id: 'equipamento', rotulo: 'Equipamento de Guindar Utilizado (tipo e TAG)' },
+  { id: 'carga', rotulo: 'Carga/Peça' },
+  { id: 'gerencia', rotulo: 'Gerência' },
+  { id: 'comoPeso', rotulo: 'Como foi obtido o peso da carga' },
+]
 
 export default function Icamento() {
   const api = useIcamento()
-  const { data } = api
+  const { data, dados } = api
   const [passo, setPasso] = useState(0)
   const [editando, setEditando] = useState<number | null>(null)
   const [gerando, setGerando] = useState(false)
@@ -41,16 +53,17 @@ export default function Icamento() {
   const anterior = () => setEditando((i) => (i === null ? null : Math.max(0, i - 1)))
 
   const vazio = (chave: string) => !(data.campos[chave] ?? '').trim()
-  const MSG_FU = 'Não foi possível calcular o FU: confira os pesos e a capacidade (escreva 5000, sem ponto de milhar).'
   const pendentes = [
     ...(fuNaoCalculavel(data) ? [MSG_FU] : []),
-    ...CAMPOS_CABECALHO.filter((c) => vazio(c.id)).map((c) => c.label),
-    ...(vazio('comoPeso') ? [ROTULO_COMO_PESO] : []),
     ...PONTOS.filter((p) => p.tipo !== 'calculado' && !OPCIONAIS.includes(p.id) && vazio(p.id)).map((p) => p.rotulo),
     ...(data.esboco ? [] : ['Esboço da carga']),
+  ]
+
+  const faltamNoChecklist = [
+    ...DADOS_DO_CHECKLIST.filter((c) => !(dados.campos[c.id] ?? '').trim()).map((c) => c.rotulo),
     ...RESPONSAVEIS.flatMap((r) => [
-      ...(vazio(r.nome) ? [`${r.titulo}: nome`] : []),
-      ...(data.assinaturas[r.assinatura] ? [] : [`${r.titulo}: assinatura`]),
+      ...((dados.campos[r.nome] ?? '').trim() ? [] : [`${r.titulo}: nome`]),
+      ...(dados.assinaturas[r.assinatura] ? [] : [`${r.titulo}: assinatura`]),
     ]),
   ]
 
@@ -59,7 +72,7 @@ export default function Icamento() {
     setErro('')
     setAviso('')
     try {
-      setAviso(textoResultado(await destino.emitir((pasta) => gerarPdf(data, pasta))))
+      setAviso(textoResultado(await destino.emitir((pasta) => gerarPdf(data, dados, pasta))))
     } catch (e) {
       setErro(`Não foi possível gerar o PDF: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
@@ -68,7 +81,7 @@ export default function Icamento() {
   }
 
   const novo = () => {
-    if (window.confirm('Apagar tudo e começar um novo plano?')) {
+    if (window.confirm('Apagar o esquema e os acessórios e começar um novo plano? (Os dados do Checklist não são apagados.)')) {
       api.reset()
       setPasso(0)
       setErro('')
@@ -94,19 +107,6 @@ export default function Icamento() {
       </nav>
 
       {passo === 0 && (
-        <section className="grupo">
-          <h3>DADOS DA ATIVIDADE</h3>
-          {CAMPOS_CABECALHO.map((c) => (
-            <CampoInput key={c.id} campo={c} campos={data.campos} onChange={api.setCampo} />
-          ))}
-          <label className="campo">
-            <span className="rotulo">{ROTULO_COMO_PESO}</span>
-            <textarea value={data.campos.comoPeso ?? ''} onChange={(e) => api.setCampo('comoPeso', e.target.value)} />
-          </label>
-        </section>
-      )}
-
-      {passo === 1 && (
         <>
           <h2>ESQUEMA DE IÇAMENTO</h2>
           <label className="campo">
@@ -127,40 +127,23 @@ export default function Icamento() {
         </>
       )}
 
-      {passo === 2 && (
+      {passo === 1 && (
         <>
           <h2>LISTA DOS ACESSÓRIOS UTILIZADOS</h2>
           <TabelaAcessorios linhas={data.acessorios} onChange={api.setAcessorio} onAdd={api.addLinha} onRemove={api.removeLinha} />
         </>
       )}
 
-      {passo === 3 && (
+      {passo === 2 && (
         <>
-          <h2>Assinaturas</h2>
-          {RESPONSAVEIS.map((r) => (
-            <section className="grupo" key={r.id}>
-              <h3>{r.titulo}</h3>
-              <label className="campo">
-                <span className="rotulo">Nome do Empregado</span>
-                <input type="text" value={data.campos[r.nome] ?? ''} onChange={(e) => api.setCampo(r.nome, e.target.value)} />
-              </label>
-              <label className="campo">
-                <span className="rotulo">Matrícula / CPF</span>
-                <input type="text" value={data.campos[r.doc] ?? ''} onChange={(e) => api.setCampo(r.doc, e.target.value)} />
-              </label>
-              <SignaturePad
-                label="Assinatura"
-                value={data.assinaturas[r.assinatura] ?? ''}
-                onChange={(url) => api.setAssinatura(r.assinatura, url)}
-              />
-              {r.id === 'resp' && (
-                <p>
-                  <button type="button" className="btn" onClick={api.mesmaPessoa}>Mesma pessoa do operador</button>
-                </p>
-              )}
-            </section>
-          ))}
-          <p><small>{NOTA_ASSINATURA}</small></p>
+          <h2>Revisar e gerar PDF</h2>
+          <p>
+            <small>
+              Os dados da atividade, do operador e do responsável pela amarração vêm do <Link to="/checklist">Checklist</Link> (tela Dados).
+              Responsável: <strong>{dados.campos.responsavel || '—'}</strong> · Projeto: <strong>{dados.campos.projeto || '—'}</strong> · Carga/Peça:{' '}
+              <strong>{dados.campos.carga || '—'}</strong>
+            </small>
+          </p>
 
           <div className="lembretes">
             <strong>{TITULO_LEMBRETES}</strong>
@@ -172,9 +155,21 @@ export default function Icamento() {
             <p><strong>{LEMBRETE_FINAL}</strong></p>
           </div>
 
+          {faltamNoChecklist.length > 0 && (
+            <>
+              <div className="aviso">
+                Faltam {faltamNoChecklist.length} dado(s) no <Link to="/checklist">Checklist</Link> (tela Dados), que saem neste PDF:
+              </div>
+              <ul className="pendentes">
+                {faltamNoChecklist.map((p) => (
+                  <li key={p}>{p}</li>
+                ))}
+              </ul>
+            </>
+          )}
           {pendentes.length > 0 ? (
             <>
-              <div className="aviso">{pendentes.length} item(ns) pendente(s) (o PDF pode ser gerado assim mesmo):</div>
+              <div className="aviso">{pendentes.length} item(ns) pendente(s) no esquema (o PDF pode ser gerado assim mesmo):</div>
               <ul className="pendentes">
                 {pendentes.map((p) => (
                   <li key={p}>{p}</li>
@@ -182,7 +177,7 @@ export default function Icamento() {
               </ul>
             </>
           ) : (
-            <p>Tudo preenchido.</p>
+            faltamNoChecklist.length === 0 && <p>Tudo preenchido.</p>
           )}
           {erro && <div className="aviso">{erro}</div>}
           {aviso && <div className="aviso ok">{aviso}</div>}

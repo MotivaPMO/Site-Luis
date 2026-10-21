@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { GRUPOS_LIBERACAO, GRUPOS_MAQUINA, GRUPO_IDENTIFICACAO, TITULO_LIBERACAO } from '../checklist/grupos'
+import { GRUPOS_DADOS, GRUPOS_MAQUINA } from '../checklist/grupos'
 import { SECOES } from '../checklist/itens'
 import { useChecklist } from '../checklist/useChecklist'
 import { gerarPdf } from '../checklist/gerarPdf'
@@ -21,7 +21,9 @@ export default function Checklist() {
   const destino = usePastaDestino()
 
   const pendentes = [
-    ...GRUPO_IDENTIFICACAO.campos.filter((c) => !(api.data.campos[c.id] ?? '').trim()).map((c) => `${c.label} (nome do arquivo PDF)`),
+    ...GRUPOS_DADOS[0].campos
+      .filter((c) => (c.id === 'responsavel' || c.id === 'projeto') && !(api.data.campos[c.id] ?? '').trim())
+      .map((c) => `${c.label} (nome do arquivo PDF)`),
     ...SECOES.flatMap((s) =>
       s.itens.filter((i) => !api.data.respostas[i.id]).map((i) => `${s.titulo.split(' ')[0]} ${i.texto.slice(0, 70)}…`),
     ),
@@ -85,9 +87,16 @@ export default function Checklist() {
 
       {passo === 3 && (
         <>
-          <h2>{TITULO_LIBERACAO}</h2>
-          {[GRUPO_IDENTIFICACAO, ...GRUPOS_LIBERACAO].map((g) => (
-            <GrupoView key={g.id} grupo={g} api={api} />
+          <h2>DADOS</h2>
+          {GRUPOS_DADOS.map((g) => (
+            <Fragment key={g.id}>
+              <GrupoView grupo={g} api={api} />
+              {g.id === 'amarracao' && (
+                <p>
+                  <button type="button" className="btn" onClick={api.mesmaPessoa}>Mesma pessoa do operador</button>
+                </p>
+              )}
+            </Fragment>
           ))}
         </>
       )}

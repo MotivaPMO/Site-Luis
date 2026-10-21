@@ -1,5 +1,5 @@
 export type Campo =
-  | { kind: 'texto'; id: string; label: string; inputMode?: 'text' | 'decimal' | 'numeric'; unidades?: string[]; calculado?: boolean }
+  | { kind: 'texto'; id: string; label: string; inputMode?: 'text' | 'decimal' | 'numeric'; unidades?: string[]; multilinha?: boolean }
   | { kind: 'data' | 'hora'; id: string; label: string }
   | { kind: 'escolha'; id: string; label: string; opcoes: string[] }
 
@@ -25,7 +25,6 @@ export interface Item {
   texto: string
   marcas?: Marca[]
   campos?: Campo[]
-  assinatura?: Assinatura
 }
 
 export interface Secao {

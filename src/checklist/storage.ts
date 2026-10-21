@@ -1,4 +1,4 @@
-import { dadosVazios, type ChecklistData } from './schema'
+import { dadosValidos, dadosVazios, type ChecklistData } from './schema'
 
 const CHAVE = 'site-luis:checklist:v1'
 
@@ -48,6 +48,9 @@ export function limparRascunho(store: Store | null, chave: string): void {
   }
 }
 
-export const loadDraft = (store: Store | null): ChecklistData => lerRascunho(store, CHAVE, dadosVazios)
+export const loadDraft = (store: Store | null): ChecklistData => {
+  const d = lerRascunho(store, CHAVE, dadosVazios)
+  return dadosValidos(d) ? d : dadosVazios()
+}
 export const saveDraft = (store: Store | null, d: ChecklistData): boolean => salvarRascunho(store, CHAVE, d)
 export const clearDraft = (store: Store | null): void => limparRascunho(store, CHAVE)

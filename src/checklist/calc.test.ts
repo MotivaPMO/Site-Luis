@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseNumero, emKg, relacaoAutoTexto, relacaoEfetiva, acimaDe75 } from './calc'
+import { parseNumero, emKg, acimaDe75 } from './calc'
 import { dadosVazios } from './schema'
 
 const com = (campos: Record<string, string>) => ({ ...dadosVazios(), campos })
@@ -42,39 +42,23 @@ describe('emKg', () => {
   })
 })
 
-describe('relação peso/capacidade', () => {
-  it('calcula percentual com uma casa decimal e vírgula', () => {
-    const d = com({ 'lib13.peso': '9,04', capacidadeRaio: '20' })
-    expect(relacaoAutoTexto(d)).toBe('45,2')
-  })
-  it('respeita unidades diferentes', () => {
-    const d = com({ 'lib13.peso': '5000', 'lib13.peso.unidade': 'Kg', capacidadeRaio: '10' })
-    expect(relacaoAutoTexto(d)).toBe('50')
-  })
-  it('vazio quando falta peso, capacidade ou capacidade é zero', () => {
-    expect(relacaoAutoTexto(com({ capacidadeRaio: '20' }))).toBe('')
-    expect(relacaoAutoTexto(com({ 'lib13.peso': '5' }))).toBe('')
-    expect(relacaoAutoTexto(com({ 'lib13.peso': '5', capacidadeRaio: '0' }))).toBe('')
-  })
-  it('valor manual vence o automático', () => {
-    const d = com({ 'lib13.peso': '9', capacidadeRaio: '20', relacao: '60' })
-    expect(relacaoEfetiva(d)).toBe('60')
-  })
-  it('sem manual usa o automático', () => {
-    expect(relacaoEfetiva(com({ 'lib13.peso': '10', capacidadeRaio: '20' }))).toBe('50')
-  })
-})
-
-describe('acimaDe75', () => {
+describe('acimaDe75 (peso da peça × capacidade da máquina)', () => {
   it('só é verdadeiro acima de 75%', () => {
     expect(acimaDe75(com({ 'lib13.peso': '16', capacidadeRaio: '20' }))).toBe(true)
     expect(acimaDe75(com({ 'lib13.peso': '15', capacidadeRaio: '20' }))).toBe(false)
     expect(acimaDe75(com({}))).toBe(false)
   })
-  it('relação manual com % conta', () => {
-    expect(acimaDe75(com({ relacao: '80%' }))).toBe(true)
+  it('respeita as unidades (Ton é o padrão)', () => {
+    expect(acimaDe75(com({ 'lib13.peso': '16000', 'lib13.peso.unidade': 'Kg', capacidadeRaio: '20' }))).toBe(true)
+    expect(acimaDe75(com({ 'lib13.peso': '16', capacidadeRaio: '20000', 'capacidadeRaio.unidade': 'Kg' }))).toBe(true)
+    expect(acimaDe75(com({ 'lib13.peso': '1', capacidadeRaio: '20000', 'capacidadeRaio.unidade': 'Kg' }))).toBe(false)
   })
-  it('peso ambíguo "9.040" deixa a relação automática em branco', () => {
-    expect(relacaoAutoTexto(com({ 'lib13.peso': '9.040', 'lib13.peso.unidade': 'Kg', capacidadeRaio: '20' }))).toBe('')
+  it('falso quando falta peso ou capacidade, ou a capacidade é zero', () => {
+    expect(acimaDe75(com({ capacidadeRaio: '20' }))).toBe(false)
+    expect(acimaDe75(com({ 'lib13.peso': '5' }))).toBe(false)
+    expect(acimaDe75(com({ 'lib13.peso': '5', capacidadeRaio: '0' }))).toBe(false)
+  })
+  it('peso ambíguo "9.040" nunca é adivinhado', () => {
+    expect(acimaDe75(com({ 'lib13.peso': '9.040', 'lib13.peso.unidade': 'Kg', capacidadeRaio: '20' }))).toBe(false)
   })
 })

@@ -1,6 +1,5 @@
 import type { Grupo } from '../checklist/definicao'
 import type { ChecklistApi } from '../checklist/useChecklist'
-import { relacaoAutoTexto } from '../checklist/calc'
 import { CampoInput } from './CampoInput'
 import { SignaturePad } from './SignaturePad'
 
@@ -10,13 +9,7 @@ export function GrupoView({ grupo, api }: { grupo: Grupo; api: ChecklistApi }) {
     <section className="grupo">
       <h3>{grupo.titulo}</h3>
       {grupo.campos.map((c) => (
-        <CampoInput
-          key={c.id}
-          campo={c}
-          campos={data.campos}
-          onChange={api.setCampo}
-          dica={c.kind === 'texto' && c.calculado ? relacaoAutoTexto(data) || 'automático (%)' : undefined}
-        />
+        <CampoInput key={c.id} campo={c} campos={data.campos} onChange={api.setCampo} />
       ))}
       {grupo.assinaturas?.map((a) => (
         <SignaturePad

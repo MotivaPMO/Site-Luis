@@ -7,6 +7,13 @@ export interface ChecklistData {
   assinaturas: Record<string, string>
 }
 
+const objeto = (v: unknown) => typeof v === 'object' && v !== null && !Array.isArray(v)
+
+/** Formato esperado de um rascunho salvo (protege contra dados corrompidos no navegador). */
+export function dadosValidos(d: ChecklistData): boolean {
+  return objeto(d.campos) && objeto(d.respostas) && objeto(d.marcas) && objeto(d.assinaturas)
+}
+
 export const dadosVazios = (): ChecklistData => ({
   campos: {},
   respostas: {},

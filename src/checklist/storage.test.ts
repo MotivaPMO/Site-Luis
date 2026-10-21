@@ -25,6 +25,13 @@ describe('rascunho', () => {
     s.setItem('site-luis:checklist:v1', JSON.stringify({ campos: { modelo: 'X' } }))
     expect(loadDraft(s)).toEqual({ ...dadosVazios(), campos: { modelo: 'X' } })
   })
+  it('rascunho com formato inválido (campos null, respostas texto) volta vazio', () => {
+    const s = memoria()
+    s.setItem('site-luis:checklist:v1', JSON.stringify({ campos: null }))
+    expect(loadDraft(s)).toEqual(dadosVazios())
+    s.setItem('site-luis:checklist:v1', JSON.stringify({ respostas: 'x' }))
+    expect(loadDraft(s)).toEqual(dadosVazios())
+  })
   it('limpa o rascunho', () => {
     const s = memoria()
     saveDraft(s, dadosVazios())

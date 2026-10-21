@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { dadosVazios, type ChecklistData, type Resp } from './schema'
+import { copiarOperador } from './pessoa'
 import { clearDraft, getStore, loadDraft, saveDraft } from './storage'
 
 export interface ChecklistApi {
@@ -9,6 +10,7 @@ export interface ChecklistApi {
   setResposta(id: string, r: Resp | null): void
   setMarca(chave: string, v: boolean): void
   setAssinatura(id: string, url: string): void
+  mesmaPessoa(): void
   reset(): void
 }
 
@@ -42,10 +44,14 @@ export function useChecklist(): ChecklistApi {
     setData((d) => ({ ...d, assinaturas: { ...d.assinaturas, [id]: url } }))
   }, [])
 
+  const mesmaPessoa = useCallback(() => {
+    setData((d) => copiarOperador(d))
+  }, [])
+
   const reset = useCallback(() => {
     clearDraft(store)
     setData(dadosVazios())
   }, [store])
 
-  return { data, storageOk, setCampo, setResposta, setMarca, setAssinatura, reset }
+  return { data, storageOk, setCampo, setResposta, setMarca, setAssinatura, mesmaPessoa, reset }
 }

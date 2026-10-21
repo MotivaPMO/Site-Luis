@@ -2,7 +2,6 @@ import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/render
 import type { Campo, Grupo, Item } from './definicao'
 import { GRUPOS_LIBERACAO, GRUPOS_MAQUINA, TITULO_LIBERACAO } from './grupos'
 import { SECOES } from './itens'
-import { relacaoEfetiva } from './calc'
 import { formatarData, formatarHora } from './format'
 import type { ChecklistData } from './schema'
 
@@ -40,10 +39,10 @@ function textoCampo(c: Campo, d: ChecklistData): string {
     const fmt = c.kind === 'data' ? formatarData : formatarHora
     return fmt(d.campos[c.id] ?? '') || LINHA
   }
-  const v = c.calculado ? relacaoEfetiva(d) : (d.campos[c.id] ?? '')
+  const v = d.campos[c.id] ?? ''
   if (!v.trim()) return LINHA
   const un = c.unidades ? ` ${d.campos[`${c.id}.unidade`] ?? c.unidades[0]}` : ''
-  return `${v}${un}${c.calculado && !v.includes('%') ? '%' : ''}`
+  return `${v}${un}`
 }
 
 function AssinaturaPdf({ label, src }: { label: string; src?: string }) {
@@ -84,7 +83,6 @@ function ItemPdf({ item, d }: { item: Item; d: ChecklistData }) {
             {c.label}: {textoCampo(c, d)}
           </Text>
         ))}
-        {item.assinatura && <AssinaturaPdf label={item.assinatura.label} src={d.assinaturas[item.assinatura.id]} />}
       </View>
       {(['S', 'N', 'NA'] as const).map((r) => (
         <View key={r} style={s.snn}>
@@ -103,8 +101,8 @@ export function ChecklistPdf({ data, logoSrc }: { data: ChecklistData; logoSrc?:
           {logoSrc && <Image src={logoSrc} style={s.logo} />}
           <Text style={s.titulo}>PLANO PARA MOVIMENTAÇÃO DE CARGA</Text>
           <View style={s.idBox}>
-            <Text style={s.idRotulo}>Supervisor:</Text>
-            <Text style={s.idValor}>{data.campos.supervisor ?? ''}</Text>
+            <Text style={s.idRotulo}>Responsável pela atividade:</Text>
+            <Text style={s.idValor}>{data.campos.responsavel ?? ''}</Text>
             <Text style={s.idRotulo}>Projeto:</Text>
             <Text style={s.idValor}>{data.campos.projeto ?? ''}</Text>
           </View>

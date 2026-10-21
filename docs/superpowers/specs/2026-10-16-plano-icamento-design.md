@@ -108,3 +108,9 @@ Ferramentas do Guia RAC 5 (sub-projeto 3), login, histórico, exportar `.xlsx`, 
 1. A imagem do guindaste (extraída do seu PDF) entra no repositório do GitHub, como o logo já entrou.
 2. A caixa em branco no canto superior direito do cabeçalho fica vazia, como no original.
 3. Acessórios e Moitão vazios contam como 0 no FU; o Peso do Contrapeso e a Capacidade do Moitão não entram na fórmula (como na folha).
+
+---
+
+## Atualização (2026-10-21): dados e assinaturas vêm do Checklist
+
+Os campos de cabeçalho (Local, Atividade, Equipamento, Carga/Peça, Gerência, Data, "Como foi obtido o peso da carga"), Responsável pela atividade, Projeto e as pessoas (Operador e Responsável pela Amarração, com Nome, **Empresa** e Assinatura) passaram a ser preenchidos **uma única vez, na tela Dados do Checklist**. O Plano de Içamento tem só 3 etapas (Esquema, Acessórios, Revisar), lê esses dados do rascunho do checklist e a coluna "Matrícula / CPF" da tabela de assinaturas virou "Empresa". A revisão lista o que falta no Checklist. "Novo plano" apaga só o esquema e os acessórios.

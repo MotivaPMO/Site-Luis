@@ -9,7 +9,7 @@ export async function gerarPdf(data: ChecklistData, pasta: PastaHandle | null): 
   const blob = await pdf(<ChecklistPdf data={data} logoSrc={logo} />).toBlob()
   const nome = nomeArquivoPdf({
     tipo: 'Checklist',
-    supervisor: data.campos.supervisor,
+    responsavel: data.campos.responsavel,
     projeto: data.campos.projeto,
     data: data.campos.data || dataLocalISO(new Date()),
   })

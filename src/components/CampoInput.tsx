@@ -4,10 +4,9 @@ interface Props {
   campo: Campo
   campos: Record<string, string>
   onChange: (chave: string, valor: string) => void
-  dica?: string
 }
 
-export function CampoInput({ campo, campos, onChange, dica }: Props) {
+export function CampoInput({ campo, campos, onChange }: Props) {
   const v = campos[campo.id] ?? ''
 
   if (campo.kind === 'escolha') {
@@ -31,6 +30,15 @@ export function CampoInput({ campo, campos, onChange, dica }: Props) {
     )
   }
 
+  if (campo.kind === 'texto' && campo.multilinha) {
+    return (
+      <label className="campo">
+        <span className="rotulo">{campo.label}</span>
+        <textarea value={v} onChange={(e) => onChange(campo.id, e.target.value)} />
+      </label>
+    )
+  }
+
   const type = campo.kind === 'data' ? 'date' : campo.kind === 'hora' ? 'time' : 'text'
   return (
     <label className="campo">
@@ -40,7 +48,6 @@ export function CampoInput({ campo, campos, onChange, dica }: Props) {
           type={type}
           inputMode={campo.kind === 'texto' ? campo.inputMode : undefined}
           value={v}
-          placeholder={dica}
           onChange={(e) => onChange(campo.id, e.target.value)}
         />
         {campo.kind === 'texto' && campo.unidades && (

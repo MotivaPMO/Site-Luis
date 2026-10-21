@@ -4,11 +4,11 @@ export interface LinhaAcessorio {
   quantidade: string
 }
 
+/** Só o que é exclusivo do Plano de Içamento. Os dados gerais e as assinaturas vêm do checklist. */
 export interface IcamentoData {
   campos: Record<string, string>
   acessorios: LinhaAcessorio[]
   esboco: string
-  assinaturas: Record<string, string>
 }
 
 export const linhaVazia = (): LinhaAcessorio => ({ descricao: '', capacidade: '', quantidade: '' })
@@ -17,7 +17,6 @@ export const icamentoVazio = (): IcamentoData => ({
   campos: {},
   acessorios: Array.from({ length: 4 }, linhaVazia),
   esboco: '',
-  assinaturas: {},
 })
 
 export function rascunhoValido(d: IcamentoData): boolean {
@@ -25,8 +24,6 @@ export function rascunhoValido(d: IcamentoData): boolean {
     typeof d.campos !== 'object' ||
     d.campos === null ||
     !Array.isArray(d.acessorios) ||
-    typeof d.esboco !== 'string' ||
-    typeof d.assinaturas !== 'object' ||
-    d.assinaturas === null
+    typeof d.esboco !== 'string'
   )
 }

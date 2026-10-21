@@ -1,8 +1,10 @@
 import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import type { ComponentProps } from 'react'
 import { formatarData } from '../checklist/format'
+import { GRUPOS_DADOS } from '../checklist/grupos'
+import type { ChecklistData } from '../checklist/schema'
 import { textoPonto } from './calc'
-import { CAMPOS_CABECALHO, NOTA_ASSINATURA, RESPONSAVEIS, ROTULO_COMO_PESO } from './campos'
+import { NOTA_ASSINATURA, RESPONSAVEIS } from './campos'
 import { LEMBRETES, LEMBRETE_FINAL, TITULO_LEMBRETES } from './lembretes'
 import { ALTURA_IMG, AREA_ESBOCO, LARGURA_IMG, PONTOS } from './pontos'
 import type { IcamentoData } from './schema'
@@ -46,11 +48,21 @@ function Celula({ rotulo, valor, flex }: { rotulo: string; valor: string; flex: 
   )
 }
 
-export function IcamentoPdf({ data, esquemaSrc, logoSrc }: { data: IcamentoData; esquemaSrc: Fonte; logoSrc?: string }) {
-  const campos = data.campos
+const CAMPOS_GERAIS = GRUPOS_DADOS.flatMap((g) => g.campos)
+
+interface Props {
+  data: IcamentoData
+  /** Dados gerais e assinaturas preenchidos no Checklist. */
+  dados: ChecklistData
+  esquemaSrc: Fonte
+  logoSrc?: string
+}
+
+export function IcamentoPdf({ data, dados, esquemaSrc, logoSrc }: Props) {
+  const campos = dados.campos
   const cab = (id: string) => {
-    const c = CAMPOS_CABECALHO.find((x) => x.id === id)!
-    return { rotulo: c.label, valor: c.kind === 'data' ? formatarData(campos[id] ?? '') : (campos[id] ?? '') }
+    const c = CAMPOS_GERAIS.find((x) => x.id === id)!
+    return { rotulo: c.label.replace(/\?$/, ''), valor: c.kind === 'data' ? formatarData(campos[id] ?? '') : (campos[id] ?? '') }
   }
   const linhas = [...data.acessorios]
   while (linhas.length < MIN_LINHAS) linhas.push({ descricao: '', capacidade: '', quantidade: '' })
@@ -65,8 +77,8 @@ export function IcamentoPdf({ data, esquemaSrc, logoSrc }: { data: IcamentoData;
             <Text style={s.subtitulo}>(Guindastes)</Text>
           </View>
           <View style={[s.cel, { flex: 154 }]}>
-            <Text style={s.rotulo}>Supervisor:</Text>
-            <Text style={s.valor}>{campos.supervisor ?? ''}</Text>
+            <Text style={s.rotulo}>Responsável pela atividade:</Text>
+            <Text style={s.valor}>{campos.responsavel ?? ''}</Text>
             <Text style={s.rotulo}>Projeto:</Text>
             <Text style={s.valor}>{campos.projeto ?? ''}</Text>
           </View>
@@ -82,7 +94,7 @@ export function IcamentoPdf({ data, esquemaSrc, logoSrc }: { data: IcamentoData;
           <Celula {...cab('data')} flex={154} />
         </View>
         <View style={s.linha}>
-          <Celula rotulo={ROTULO_COMO_PESO.replace(/\?$/, '')} valor={campos.comoPeso ?? ''} flex={1} />
+          <Celula {...cab('comoPeso')} flex={1} />
         </View>
 
         <View style={s.banner}>
@@ -143,16 +155,16 @@ export function IcamentoPdf({ data, esquemaSrc, logoSrc }: { data: IcamentoData;
           <View style={s.linha}>
             <Text style={[s.celTab, s.celTabCab, { flex: 30, borderWidth: 0 }]} />
             <Text style={[s.celTab, s.celTabCab, { flex: 40, textAlign: 'center', borderWidth: 0 }]}>Nome do Empregado</Text>
-            <Text style={[s.celTab, s.celTabCab, { flex: 14, textAlign: 'center', borderWidth: 0 }]}>Matrícula / CPF</Text>
+            <Text style={[s.celTab, s.celTabCab, { flex: 14, textAlign: 'center', borderWidth: 0 }]}>Empresa</Text>
             <Text style={[s.celTab, s.celTabCab, { flex: 16, textAlign: 'center', borderWidth: 0 }]}>Assinatura</Text>
           </View>
           {RESPONSAVEIS.map((r) => (
             <View key={r.id} style={s.linha}>
               <Text style={[s.celTab, { flex: 30, minHeight: 28 }]}>{r.titulo}</Text>
               <Text style={[s.celTab, { flex: 40 }]}>{campos[r.nome] ?? ''}</Text>
-              <Text style={[s.celTab, { flex: 14 }]}>{campos[r.doc] ?? ''}</Text>
+              <Text style={[s.celTab, { flex: 14 }]}>{campos[r.empresa] ?? ''}</Text>
               <View style={[s.celTab, { flex: 16, justifyContent: 'center' }]}>
-                {data.assinaturas[r.assinatura] ? <Image src={data.assinaturas[r.assinatura]} style={s.assinImg} /> : null}
+                {dados.assinaturas[r.assinatura] ? <Image src={dados.assinaturas[r.assinatura]} style={s.assinImg} /> : null}
               </View>
             </View>
           ))}

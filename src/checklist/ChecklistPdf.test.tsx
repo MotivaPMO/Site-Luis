@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { ChecklistPdf } from './ChecklistPdf'
-import { GRUPOS_LIBERACAO, GRUPOS_MAQUINA } from './grupos'
+import { GRUPOS_DADOS, GRUPOS_MAQUINA } from './grupos'
 import { SECOES } from './itens'
 import { dadosVazios, type ChecklistData } from './schema'
 
@@ -11,7 +11,7 @@ const PIXEL =
 
 function dadosCheios(): ChecklistData {
   const d = dadosVazios()
-  const campos = [...GRUPOS_MAQUINA, ...GRUPOS_LIBERACAO].flatMap((g) => g.campos)
+  const campos = [...GRUPOS_MAQUINA, ...GRUPOS_DADOS].flatMap((g) => g.campos)
   for (const c of [...campos, ...SECOES.flatMap((s) => s.itens.flatMap((i) => i.campos ?? []))]) {
     d.campos[c.id] = c.kind === 'escolha' ? c.opcoes[0] : c.kind === 'data' ? '2026-10-16' : c.kind === 'hora' ? '09:05' : '12,5'
   }
@@ -19,17 +19,16 @@ function dadosCheios(): ChecklistData {
     for (const i of s.itens) {
       d.respostas[i.id] = 'S'
       for (const m of i.marcas ?? []) d.marcas[`${i.id}.${m.id}`] = true
-      if (i.assinatura) d.assinaturas[i.assinatura.id] = PIXEL
     }
-  for (const g of [...GRUPOS_MAQUINA, ...GRUPOS_LIBERACAO]) for (const a of g.assinaturas ?? []) d.assinaturas[a.id] = PIXEL
+  for (const g of [...GRUPOS_MAQUINA, ...GRUPOS_DADOS]) for (const a of g.assinaturas ?? []) d.assinaturas[a.id] = PIXEL
   return d
 }
 
 const paginas = (buf: Buffer) => Number(/\/Count (\d+)/.exec(buf.toString('latin1'))?.[1])
 
 describe('ChecklistPdf', () => {
-  it('gera um PDF válido com supervisor e projeto no cabeçalho', async () => {
-    const d = { ...dadosVazios(), campos: { supervisor: 'Carlos Mendes', projeto: 'Projeto Ponte Sul' } }
+  it('gera um PDF válido com responsável e projeto no cabeçalho', async () => {
+    const d = { ...dadosVazios(), campos: { responsavel: 'Carlos Mendes', projeto: 'Projeto Ponte Sul' } }
     const buf = await renderToBuffer(<ChecklistPdf data={d} />)
     expect(buf.subarray(0, 4).toString()).toBe('%PDF')
     expect(paginas(buf)).toBe(1)

@@ -23,17 +23,8 @@ function relacaoAuto(d: ChecklistData): number | null {
   return Math.round((peso / cap) * 1000) / 10
 }
 
-export function relacaoAutoTexto(d: ChecklistData): string {
-  const n = relacaoAuto(d)
-  return n === null ? '' : String(n).replace('.', ',')
-}
-
-export function relacaoEfetiva(d: ChecklistData): string {
-  const manual = d.campos.relacao?.trim()
-  return manual ? manual : relacaoAutoTexto(d)
-}
-
+/** Peso da peça acima de 75% da capacidade da máquina para o raio: o Plano de Rigging é necessário. */
 export function acimaDe75(d: ChecklistData): boolean {
-  const n = parseNumero(relacaoEfetiva(d))
+  const n = relacaoAuto(d)
   return n !== null && n > 75
 }
