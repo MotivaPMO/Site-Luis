@@ -142,3 +142,12 @@ Título: "Plano Básico de Içamento de Carga (Guindastes)".
 ## Anexo B — Sub-projeto 3 (ferramentas do app de referência)
 
 Precisarão dos dados que não temos: tabelas de capacidade (CMTE), cores de cintas, sinais, Disol, FU, CINSP, Mataco. O usuário fornecerá antes dessa etapa.
+
+---
+
+## Atualização (2026-10-21)
+
+- **Máquina:** saíram Comprimento da lança, Comprimento do Jib e o campo Relação Peso/Capacidade. O aviso de 75% continua na pergunta 2 de Liberação, calculado pelo peso da peça e pela capacidade da máquina.
+- **Equipe, pergunta 1:** cada tipo de acessório (Cintas, Cabos, Manilhas, Ganchos com trava, Estropos) tem seu nível **Bom / Regular / Ruim**.
+- **Liberação:** a pergunta 2 ficou só com S/N/NA; as perguntas 6 e 7 perderam Nome do especialista e Assinatura. As assinaturas passam a ser 3: Segurança do Trabalho, Operador e Responsável pela Amarração.
+- **Dados:** tela única com Responsável pela atividade, Projeto, Local, Atividade, Equipamento, Carga/Peça, Gerência, "Como foi obtido o peso da carga", Data/Hora, Nº da PT e as pessoas (Segurança do Trabalho, Operador, Responsável pela Amarração) com Nome, **Empresa** e Assinatura ("Matrícula" virou "Empresa"). O Plano de Içamento usa os mesmos dados. O PDF do checklist continua com o layout do Excel (cabeçalho com Responsável e Projeto; seção 4 com Empresa).
